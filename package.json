@@ -1,0 +1,33 @@
+{
+  "name": "maai-ka-thekuaa",
+  "version": "1.1.0",
+  "description": "Maai Ka Thekuaa - traditional Indian sweet store, e-commerce website with admin CMS",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js",
+    "seed": "node server/seed.js",
+    "reseed": "node server/seed.js --force",
+    "backup": "node server/backup.js",
+    "check": "node server/selftest.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "thekua",
+    "sweets",
+    "ecommerce",
+    "sqlite",
+    "admin-panel"
+  ],
+  "author": "Maai Ka Thekuaa",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "sql.js": "1.10.3"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "^11.10.0"
+  }
+}

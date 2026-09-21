@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maai Ka Thekuaa — Traditional Homemade Thekua &amp; Indian Sweets</title>
+<meta name="description" content="Authentic handmade thekua and traditional Indian sweets made with desi ghee, gur and love.">
+<link id="favicon" rel="icon" href="/uploads/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="topbar" id="topbar"></div>
+
+<header class="site-header">
+  <div class="wrap">
+    <nav class="nav">
+      <a href="/" class="brand" data-link>
+        <img id="brandLogo" src="/uploads/logo.svg" alt="Maai Ka Thekuaa">
+      </a>
+      <div class="nav-links" id="navLinks"></div>
+      <div class="nav-actions">
+        <button class="icon-btn" id="btnSearch" title="Search" aria-label="Search">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        </button>
+        <a href="/cart" data-link class="icon-btn" id="btnCart" title="Cart" aria-label="Cart">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M6 6L5 3H2"/></svg>
+          <span class="badge hidden" id="cartCount">0</span>
+        </a>
+        <button class="icon-btn" id="btnUser" title="Login / Profile" aria-label="Account">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.4-4 4.2-6 7.5-6s6.1 2 7.5 6"/></svg>
+        </button>
+        <button class="icon-btn hamburger" id="btnMenu" aria-label="Menu">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </nav>
+  </div>
+  <div class="search-panel" id="searchPanel">
+    <div class="wrap">
+      <form id="searchForm">
+        <input type="search" id="searchInput" placeholder="Search for thekua, laddu, gift boxes…" autocomplete="off">
+        <button class="btn" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+</header>
+
+<main id="app"><div class="loading"><div class="spinner"></div>Loading…</div></main>
+
+<footer class="site-footer" id="footer"></footer>
+
+<aside class="drawer" id="drawer"></aside>
+<div class="overlay" id="overlay"></div>
+<div class="toast-wrap" id="toasts"></div>
+<div id="modalRoot"></div>
+<a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" title="Chat on WhatsApp" aria-label="WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.84-.2-.49-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.03s.87 2.35.99 2.51c.12.16 1.71 2.61 4.14 3.66.58.25 1.03.4 1.38.51.58.19 1.11.16 1.53.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.05.14-1.16-.06-.1-.22-.16-.47-.28z"/></svg>
+</a>
+
+<script src="/js/app.js"></script>
+<script src="/js/pages.js"></script>
+<script src="/js/anim.js"></script>
+<script>window.MKT.start();</script>
+</body>
+</html>
