@@ -197,6 +197,18 @@
     document.getElementById('drawerLogin').onclick = (e) => { e.preventDefault(); closeDrawer(); MKT.openAuth(); };
   }
 
+  const ROSETTE = '<svg class="sep" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor"><ellipse cx="12" cy="5.5" rx="2.2" ry="4.2"/><ellipse cx="12" cy="18.5" rx="2.2" ry="4.2"/><ellipse cx="5.5" cy="12" rx="4.2" ry="2.2"/><ellipse cx="18.5" cy="12" rx="4.2" ry="2.2"/><circle cx="12" cy="12" r="2"/></g></svg>';
+
+  function renderKeywordStrip() {
+    const el = document.getElementById('kwStrip');
+    if (!el) return;
+    const b = MKT.settings.branding || {};
+    const words = [b.tagline].concat((MKT.footerCategories || []).map((c) => c.name)).filter(Boolean);
+    if (!words.length) { el.hidden = true; return; }
+    const run = words.map((w) => `<span>${esc(w)}</span>${ROSETTE}`).join('');
+    el.innerHTML = `<div class="kw-track">${run}${run}${run}${run}</div>`;
+  }
+
   function renderTopbar() {
     const d = MKT.settings.delivery || {};
     const c = MKT.settings.contact || {};
@@ -380,6 +392,20 @@
       MKT.go('/products' + (q ? '?search=' + encodeURIComponent(q) : ''));
     };
 
+    const toTop = document.getElementById('toTop');
+    if (toTop) {
+      toTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          toTop.classList.toggle('show', window.scrollY > 900);
+          ticking = false;
+        });
+      });
+    }
+
     try {
       const boot = await api('/api/bootstrap');
       MKT.settings = boot.settings; MKT.nav = boot.nav; MKT.pages = boot.pages;
@@ -389,6 +415,7 @@
     try { const me = await api('/api/auth/me'); MKT.user = me.user; } catch (e) { MKT.user = null; }
 
     applyTheme();
+    renderKeywordStrip();
     renderTopbar();
     renderNav();
     renderFooter();

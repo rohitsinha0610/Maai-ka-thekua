@@ -67,8 +67,6 @@
   /** Wraps every word so the headline can rise into view word by word. */
   const splitWords = (text) => String(text || '').split(/\s+/).filter(Boolean)
     .map((w, i) => `<span class="w"><span style="--i:${i}">${esc(w)}</span></span>`).join(' ');
-  const ROSETTE = '<svg class="sep" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor"><ellipse cx="12" cy="5.5" rx="2.2" ry="4.2"/><ellipse cx="12" cy="18.5" rx="2.2" ry="4.2"/><ellipse cx="5.5" cy="12" rx="4.2" ry="2.2"/><ellipse cx="18.5" cy="12" rx="4.2" ry="2.2"/><circle cx="12" cy="12" r="2"/></g></svg>';
-
   /* ============================== HOME ============================== */
   MKT.route('/', async (app) => {
     const d = await api('/api/home');
@@ -108,11 +106,6 @@
               ${chips.map((c, i) => `<div class="hm-chip c${i + 1}" data-depth="${i ? 1.6 : 1.1}"><div class="hm-chip-in"><span class="ico">${esc(c.icon || '🪔')}</span><b>${esc(c.title)}</b></div></div>`).join('')}
             </div>
           </div></div></section>`);
-          const words = [].concat((d.categories || []).map((c) => c.name), (d.usp || []).map((u) => u.title)).filter(Boolean);
-          if (words.length) {
-            const run = words.map((w) => `<span>${esc(w)}</span>${ROSETTE}`).join('');
-            parts.push(`<div class="marquee" aria-hidden="true"><div class="marquee-track">${run}${run}${run}${run}</div></div>`);
-          }
           break;
         }
         case 'usp':
