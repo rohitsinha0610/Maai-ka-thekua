@@ -46,14 +46,28 @@
     });
   }
 
-  function sectionHead(eyebrow, title, sub) {
-    return `<div class="section-head">
-      ${eyebrow ? `<div class="eyebrow">${esc(eyebrow)}</div>` : ''}
-      <h2>${esc(title || '')}</h2>
-      <div class="motif-line"></div>
-      ${sub ? `<p>${esc(sub)}</p>` : ''}
+  function sectionHead(eyebrow, title, sub, action) {
+    return `<div class="s-head">
+      <div class="s-head-text">
+        <h2>${esc(title || '')}</h2>
+        ${sub ? `<p>${esc(sub)}</p>` : ''}
+      </div>
+      ${action ? `<div class="s-head-action">${action}</div>` : ''}
     </div>`;
   }
+
+  const ICON_PREV = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>';
+  const ICON_NEXT = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
+  const railButtons = () => `<div class="rail-ctrl">
+      <button class="rail-btn prev" data-rail="prev" aria-label="Previous">${ICON_PREV}</button>
+      <button class="rail-btn next" data-rail="next" aria-label="Next">${ICON_NEXT}</button>
+    </div>`;
+  const moreLink = (text, link) => text
+    ? `<a class="link-more" href="${esc(link || '/products')}" data-link>${esc(text)}</a>` : '';
+  /** Wraps every word so the headline can rise into view word by word. */
+  const splitWords = (text) => String(text || '').split(/\s+/).filter(Boolean)
+    .map((w, i) => `<span class="w"><span style="--i:${i}">${esc(w)}</span></span>`).join(' ');
+  const ROSETTE = '<svg class="sep" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor"><ellipse cx="12" cy="5.5" rx="2.2" ry="4.2"/><ellipse cx="12" cy="18.5" rx="2.2" ry="4.2"/><ellipse cx="5.5" cy="12" rx="4.2" ry="2.2"/><ellipse cx="18.5" cy="12" rx="4.2" ry="2.2"/><circle cx="12" cy="12" r="2"/></g></svg>';
 
   /* ============================== HOME ============================== */
   MKT.route('/', async (app) => {
@@ -64,67 +78,89 @@
       switch (s.type) {
         case 'hero': {
           const cfg = s.config || {};
+          const siteName = (MKT.settings.branding || {}).site_name || 'Maai Ka Thekuaa';
+          const ringUnit = siteName + ' • Homemade Thekua & Sweets • ';
+          const chips = (d.usp || []).slice(-2);
           parts.push(`
-          <section class="hero"><div class="wrap"><div class="hero-inner">
-            <div>
-              ${cfg.badge ? `<div class="hero-badge">✨ ${esc(cfg.badge)}</div>` : ''}
-              <h1>${esc(s.title)}</h1>
+          <section class="hero"><div class="hero-bg" aria-hidden="true"></div>
+          <div class="wrap"><div class="hero-inner">
+            <div class="hero-copy">
+              ${cfg.badge ? `<div class="hero-badge"><i></i>${esc(cfg.badge)}</div>` : ''}
+              <h1>${splitWords(s.title)}</h1>
               <p class="lead">${esc(s.subtitle)}</p>
               <div class="hero-cta">
-                ${s.button_text ? `<a class="btn" href="${esc(s.button_link || '/products')}" data-link>${esc(s.button_text)}</a>` : ''}
-                ${s.button2_text ? `<a class="btn ghost" href="${esc(s.button2_link || '/story')}" data-link>${esc(s.button2_text)}</a>` : ''}
+                ${s.button_text ? `<a class="btn" data-magnet href="${esc(s.button_link || '/products')}" data-link>${esc(s.button_text)}</a>` : ''}
+                ${s.button2_text ? `<a class="btn ghost" data-magnet href="${esc(s.button2_link || '/story')}" data-link>${esc(s.button2_text)}</a>` : ''}
               </div>
               <div class="hero-stats">
-                <div><strong>100%</strong><span>Homemade</span></div>
+                <div><strong data-count="100" data-suffix="%">100%</strong><span>Homemade</span></div>
                 <div><strong>Pure</strong><span>Desi Ghee &amp; Gur</span></div>
-                <div><strong>4.8★</strong><span>Customer rating</span></div>
+                <div><strong data-count="4.8" data-decimals="1" data-suffix="★">4.8★</strong><span>Customer rating</span></div>
               </div>
             </div>
-            <div class="hero-media"><img src="${esc(s.image || '/uploads/hero-thekua.svg')}" alt="Traditional Thekua"></div>
+            <div class="hero-media" data-tilt>
+              <div class="hm-glow"></div>
+              <svg class="hm-ring" viewBox="0 0 200 200" aria-hidden="true">
+                <defs><path id="ringPath" d="M100,100 m-89,0 a89,89 0 1,1 178,0 a89,89 0 1,1 -178,0"/></defs>
+                <text><textPath href="#ringPath" textLength="553" lengthAdjust="spacing">${esc(ringUnit + ringUnit)}</textPath></text>
+              </svg>
+              <div class="hm-photo"><img src="${esc(s.image || '/uploads/hero-thekua.svg')}" alt="Traditional Thekua"></div>
+              ${chips.map((c, i) => `<div class="hm-chip c${i + 1}" data-depth="${i ? 1.6 : 1.1}"><div class="hm-chip-in"><span class="ico">${esc(c.icon || '🪔')}</span><b>${esc(c.title)}</b></div></div>`).join('')}
+            </div>
           </div></div></section>`);
+          const words = [].concat((d.categories || []).map((c) => c.name), (d.usp || []).map((u) => u.title)).filter(Boolean);
+          if (words.length) {
+            const run = words.map((w) => `<span>${esc(w)}</span>${ROSETTE}`).join('');
+            parts.push(`<div class="marquee" aria-hidden="true"><div class="marquee-track">${run}${run}${run}${run}</div></div>`);
+          }
           break;
         }
         case 'usp':
           if (!d.usp.length) break;
           parts.push(`<section class="section"><div class="wrap">
-            ${sectionHead('Kyun hum', s.title, s.subtitle)}
-            <div class="grid g4">${d.usp.map((c) => `
-              <div class="card usp-card"><div class="ico">${esc(c.icon || '🪔')}</div>
-              <h3>${esc(c.title)}</h3><p>${esc(c.description)}</p>
-              ${c.button_text ? `<a class="btn ghost sm" style="margin-top:12px" href="${esc(c.button_link || '/products')}" data-link>${esc(c.button_text)}</a>` : ''}</div>`).join('')}</div>
+            ${sectionHead('', s.title, s.subtitle)}
+            <div class="usp-strip">${d.usp.map((c) => `
+              <div class="usp"><div class="ico">${esc(c.icon || '🪔')}</div>
+                <div><h3>${esc(c.title)}</h3><p>${esc(c.description)}</p>
+                ${c.button_text ? `<a class="link-more sm" href="${esc(c.button_link || '/products')}" data-link>${esc(c.button_text)}</a>` : ''}</div>
+              </div>`).join('')}</div>
           </div></section>`);
           break;
         case 'categories':
           if (!d.categories.length) break;
-          parts.push(`<section class="section alt"><div class="wrap">
-            ${sectionHead('Our range', s.title, s.subtitle)}
-            <div class="grid g3">${d.categories.map((c) => `
-              <a class="card cat-card" href="/products?category=${esc(c.slug)}" data-link>
-                <img src="${esc(c.image || '/uploads/placeholder.svg')}" alt="${esc(c.name)}" loading="lazy">
-                <div class="cat-body"><h3>${esc(c.name)}</h3><p>${esc(c.description || '')}</p></div>
+          parts.push(`<section class="section tint"><div class="wrap">
+            ${sectionHead('', s.title, s.subtitle)}
+            <div class="bento" data-n="${d.categories.length}">${d.categories.map((c) => `
+              <a class="tile" href="/products?category=${esc(c.slug)}" data-link>
+                <div class="tile-media"><img src="${esc(c.image || '/uploads/placeholder.svg')}" alt="" loading="lazy"></div>
+                <div class="tile-body">
+                  <h3>${esc(c.name)}</h3>
+                  ${c.description ? `<p>${esc(c.description)}</p>` : ''}
+                </div>
+                <span class="tile-go" aria-hidden="true">${ICON_NEXT}</span>
               </a>`).join('')}</div>
           </div></section>`);
           break;
         case 'featured':
           if (!d.featured.length) break;
           parts.push(`<section class="section" id="featured"><div class="wrap">
-            ${sectionHead('Handpicked', s.title, s.subtitle)}
+            ${sectionHead('', s.title, s.subtitle, moreLink(s.button_text, s.button_link))}
             <div class="grid g4" data-products="featured">${d.featured.map(productCard).join('')}</div>
-            ${s.button_text ? `<div class="text-center" style="margin-top:34px"><a class="btn ghost" href="${esc(s.button_link || '/products')}" data-link>${esc(s.button_text)}</a></div>` : ''}
           </div></section>`);
           break;
         case 'bestsellers':
           if (!d.bestsellers.length) break;
-          parts.push(`<section class="section alt"><div class="wrap">
-            ${sectionHead('Loved most', s.title, s.subtitle)}
-            <div class="grid g4" data-products="best">${d.bestsellers.slice(0, 4).map(productCard).join('')}</div>
+          parts.push(`<section class="section tint"><div class="wrap rail-wrap">
+            ${sectionHead('', s.title, s.subtitle, railButtons())}
+            <div class="rail rail--products" tabindex="0">${d.bestsellers.slice(0, 8).map((p, i) => `
+              <div class="rank-item"><span class="rank" aria-hidden="true">${i + 1}</span>${productCard(p)}</div>`).join('')}</div>
           </div></section>`);
           break;
         case 'offers': {
           if (!d.offers.length && !d.banners.length) break;
           parts.push(`<section class="section"><div class="wrap">
-            ${sectionHead('Save more', s.title, s.subtitle)}
-            ${d.banners.length ? `<div class="grid g2" style="margin-bottom:26px">${d.banners.map((b) => `
+            ${sectionHead('', s.title, s.subtitle)}
+            ${d.banners.length ? `<div class="grid g2 banners">${d.banners.map((b) => `
               <a class="banner-slide" href="${esc(b.button_link || '/products')}" data-link>
                 <img src="${esc(b.image)}" alt="${esc(b.heading || '')}" loading="lazy">
                 ${b.heading || b.description || b.button_text ? `<div class="banner-overlay">
@@ -132,18 +168,20 @@
                   ${b.description ? `<p>${esc(b.description)}</p>` : ''}
                   ${b.button_text ? `<span class="btn sm">${esc(b.button_text)}</span>` : ''}
                 </div>` : ''}</a>`).join('')}</div>` : ''}
-            <div class="grid g3">${d.offers.map((o) => `
-              <div class="offer-card">
-                <div class="offer-code">${esc(o.code)}
-                  <button class="copy-btn" data-copy="${esc(o.code)}">Copy</button></div>
-                <p>${esc(o.description || ((o.type === 'percent' ? o.value + '% off' : money(o.value) + ' off') + (o.min_order ? ' above ' + money(o.min_order) : '')))}</p>
+            <div class="tickets">${d.offers.map((o) => `
+              <div class="ticket">
+                <div class="t-main">
+                  <div class="t-code">${esc(o.code)}</div>
+                  <p>${esc(o.description || ((o.type === 'percent' ? o.value + '% off' : money(o.value) + ' off') + (o.min_order ? ' above ' + money(o.min_order) : '')))}</p>
+                </div>
+                <div class="t-stub"><button class="copy-btn" data-copy="${esc(o.code)}">Copy</button></div>
               </div>`).join('')}</div>
           </div></section>`);
           break;
         }
         case 'story': {
           if (!d.story.length) break;
-          // A swipeable rail of story moments instead of a single button.
+          // A swipeable rail of story moments.
           const cards = d.story.map((x, i) => `
             <article class="story-card">
               ${x.image ? `<div class="sc-img"><img src="${esc(x.image)}" alt="${esc(x.heading || '')}" loading="lazy"></div>`
@@ -154,54 +192,56 @@
                 <p>${esc(x.body || '')}</p>
               </div>
             </article>`).join('');
-          parts.push(`<section class="section alt pattern-bg"><div class="wrap">
-            ${sectionHead('Our story', s.title, s.subtitle)}
-            <div class="rail-wrap">
-              <button class="rail-btn prev" data-rail="prev" aria-label="Previous">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
-              </button>
-              <div class="rail" id="storyRail" tabindex="0">
-                ${cards}
-                <a class="story-card story-card--cta" href="${esc(s.button_link || '/story')}" data-link>
-                  <div class="sc-body">
-                    <h3>${esc(s.button_text || 'Read the full story')}</h3>
-                    <p>Poori kahani padhiye — timeline, tasveerein aur maa ki recipe.</p>
-                    <span class="btn sm">Open</span>
-                  </div>
-                </a>
-              </div>
-              <button class="rail-btn next" data-rail="next" aria-label="Next">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
-              </button>
+          parts.push(`<section class="section dark story-sec"><div class="wrap rail-wrap">
+            ${sectionHead('', s.title, s.subtitle, railButtons())}
+            <div class="rail" id="storyRail" tabindex="0">
+              ${cards}
+              <a class="story-card story-card--cta" href="${esc(s.button_link || '/story')}" data-link>
+                <div class="sc-body">
+                  <h3>${esc(s.button_text || 'Read the full story')}</h3>
+                  <p>Poori kahani padhiye — timeline, tasveerein aur maa ki recipe.</p>
+                  <span class="btn sm">Open</span>
+                </div>
+              </a>
             </div>
-            <div class="rail-hint muted">Swipe or drag to read →</div>
           </div></section>`);
           break;
         }
-        case 'testimonials':
+        case 'testimonials': {
           if (!d.testimonials.length) break;
-          parts.push(`<section class="section"><div class="wrap">
-            ${sectionHead('Testimonials', s.title, s.subtitle)}
-            <div class="grid g3">${d.testimonials.slice(0, 6).map((t) => `
-              <div class="card tst-card">${MKT.stars(t.rating)}
-                <p>“${esc(t.comment)}”</p>
-                <div class="who">— ${esc(t.name)}</div>
-                ${t.product_name ? `<div class="muted" style="font-size:.8rem">on ${esc(t.product_name)}</div>` : ''}
-              </div>`).join('')}</div>
+          const ts = d.testimonials.slice(0, 6);
+          const ini = (n) => esc(String(n || '?').trim().charAt(0).toUpperCase());
+          parts.push(`<section class="section tint"><div class="wrap">
+            ${sectionHead('', s.title, s.subtitle)}
+            <div class="quotes" data-quotes>
+              <div class="q-stage">${ts.map((t, i) => `
+                <figure class="q-slide ${i === 0 ? 'on' : ''}" data-q="${i}">
+                  <svg class="q-mark" viewBox="0 0 48 36" aria-hidden="true"><path fill="currentColor" d="M0 36V21.6C0 9.6 6.6 2.4 19.2 0l1.8 5.4C14.4 7.2 11.4 11.4 11.4 16.8H20V36H0zm27 0V21.6C27 9.6 33.6 2.4 46.2 0L48 5.4c-6.6 1.8-9.6 6-9.6 11.4H47V36H27z"/></svg>
+                  <blockquote>${esc(t.comment)}</blockquote>
+                  <figcaption>${MKT.stars(t.rating)}<span class="q-by">${esc(t.name)}${t.product_name ? `, on ${esc(t.product_name)}` : ''}</span></figcaption>
+                </figure>`).join('')}</div>
+              <div class="q-list" role="tablist">${ts.map((t, i) => `
+                <button class="q-tab ${i === 0 ? 'on' : ''}" data-qtab="${i}" role="tab" aria-selected="${i === 0}">
+                  <span class="q-av">${ini(t.name)}</span>
+                  <span class="q-who"><b>${esc(t.name)}</b><small>${t.product_name ? esc(t.product_name) : 'Verified buyer'}</small></span>
+                </button>`).join('')}</div>
+            </div>
           </div></section>`);
           break;
+        }
         case 'gallery':
           if (!d.gallery.length) break;
-          parts.push(`<section class="section alt"><div class="wrap">
-            ${sectionHead('Gallery', s.title, s.subtitle)}
-            <div class="gallery-grid">${d.gallery.map((g) => `<img src="${esc(g.image)}" alt="${esc(g.title || '')}" loading="lazy">`).join('')}</div>
+          parts.push(`<section class="section"><div class="wrap">
+            ${sectionHead('', s.title, s.subtitle)}
+            <div class="gal">${d.gallery.map((g) => `<a class="gal-item" href="${esc(g.image)}" data-lightbox="home" aria-label="${esc(g.title || 'Open photo')}"><img src="${esc(g.image)}" alt="${esc(g.title || '')}" loading="lazy"></a>`).join('')}</div>
           </div></section>`);
           break;
         case 'cta':
-          parts.push(`<section class="section dark"><div class="wrap text-center">
-            <h2>${esc(s.title)}</h2><p style="max-width:620px;margin:0 auto 26px">${esc(s.subtitle)}</p>
-            <a class="btn wa" href="${s.button_link === 'whatsapp' ? MKT.waLink('Namaste! I would like to place an order.') : esc(s.button_link)}" target="_blank" rel="noopener">${esc(s.button_text || 'Chat on WhatsApp')}</a>
-          </div></section>`);
+          parts.push(`<section class="section cta-sec"><div class="wrap"><div class="cta-card">
+            <svg class="cta-mandala" viewBox="0 0 200 200" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="100" cy="100" r="92"/><circle cx="100" cy="100" r="70"/><circle cx="100" cy="100" r="46"/><g><path d="M100 8v38M100 154v38M8 100h38M154 100h38"/><path d="M35 35l27 27M138 138l27 27M165 35l-27 27M62 138l-27 27"/></g><circle cx="100" cy="100" r="18"/></g></svg>
+            <h2>${esc(s.title)}</h2><p>${esc(s.subtitle)}</p>
+            <a class="btn wa" data-magnet href="${s.button_link === 'whatsapp' ? MKT.waLink('Namaste! I would like to place an order.') : esc(s.button_link)}" target="_blank" rel="noopener">${esc(s.button_text || 'Chat on WhatsApp')}</a>
+          </div></div></section>`);
           break;
         default:
           if (s.title || s.body) {
@@ -217,11 +257,14 @@
 
     app.innerHTML = parts.join('');
     bindProductButtons(app, [].concat(d.featured, d.bestsellers));
-    if (MKT.initRail) MKT.initRail(app.querySelector('#storyRail'));
+    if (MKT.initRail) app.querySelectorAll('.rail').forEach(MKT.initRail);
+    if (MKT.initQuotes) MKT.initQuotes(app);
     app.querySelectorAll('[data-copy]').forEach((b) => {
       b.onclick = () => {
         navigator.clipboard && navigator.clipboard.writeText(b.dataset.copy);
         MKT.toast('Coupon ' + b.dataset.copy + ' copied', 'ok');
+        b.textContent = 'Copied';
+        setTimeout(() => { b.textContent = 'Copy'; }, 1800);
       };
     });
   });

@@ -276,7 +276,6 @@
         <div class="field"><label>Password</label><input name="password" type="password" required autocomplete="current-password" value=""></div>
         <button class="btn block" type="submit">Login</button>
       </form>
-      <p class="muted" style="font-size:.8rem;margin-top:16px">Default login — admin@maaikathekuaa.com / admin123<br>Change it from Settings after your first login.</p>
       <p style="margin-top:10px"><a href="/" class="muted" style="font-size:.85rem">← Back to website</a></p>
     </div></div>`;
     q('loginForm').onsubmit = async (e) => {

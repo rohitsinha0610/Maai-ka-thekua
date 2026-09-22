@@ -200,9 +200,11 @@
   function renderTopbar() {
     const d = MKT.settings.delivery || {};
     const c = MKT.settings.contact || {};
+    const truck = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h11v10H2z"/><path d="M13 9h5l4 4v3h-9"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>';
+    const phone = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>';
     document.getElementById('topbar').innerHTML =
-      `🚚 ${esc(d.free_above ? 'Free delivery on orders above ' + money(d.free_above) : (d.eta || 'Delivered fresh across India'))}
-       &nbsp;•&nbsp; 📞 <a href="tel:${esc(c.phone || '')}">${esc(c.phone || '')}</a>`;
+      `<div class="tb-in"><span class="tb-item">${truck}<span>${esc(d.free_above ? 'Free delivery on orders above ' + money(d.free_above) : (d.eta || 'Delivered fresh across India'))}</span></span>
+       ${c.phone ? `<a class="tb-item tb-phone" href="tel:${esc(c.phone)}">${phone}<span>${esc(c.phone)}</span></a>` : ''}</div>`;
   }
 
   function renderFooter() {
@@ -221,6 +223,7 @@
       .filter((k) => s[k]).map((k) => `<a href="${esc(s[k])}" target="_blank" rel="noopener" title="${k}">${socialIcon(k)}</a>`).join('');
 
     document.getElementById('footer').innerHTML = `
+    <div class="foot-mark" aria-hidden="true">${esc(b.site_name || 'Maai Ka Thekuaa')}</div>
     <div class="wrap">
       <div class="footer-grid">
         <div class="fbrand">
